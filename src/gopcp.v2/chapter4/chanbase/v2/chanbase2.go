@@ -10,12 +10,16 @@ var strChan = make(chan string, 3)
 func main() {
 	syncChan1 := make(chan struct{}, 1)
 	syncChan2 := make(chan struct{}, 2)
+
 	go receive(strChan, syncChan1, syncChan2) // 用于演示接收操作。
 	go send(strChan, syncChan1, syncChan2)    // 用于演示发送操作。
+
+	//阻塞通道2
 	<-syncChan2
 	<-syncChan2
 }
 
+//接收通道
 func receive(strChan <-chan string,
 	syncChan1 <-chan struct{},
 	syncChan2 chan<- struct{}) {
@@ -29,10 +33,12 @@ func receive(strChan <-chan string,
 			break
 		}
 	}
+
 	fmt.Println("Stopped. [receiver]")
 	syncChan2 <- struct{}{}
 }
 
+//发送通道
 func send(strChan chan<- string,
 	syncChan1 chan<- struct{},
 	syncChan2 chan<- struct{}) {
@@ -44,8 +50,12 @@ func send(strChan chan<- string,
 			fmt.Println("Sent a sync signal. [sender]")
 		}
 	}
+
+
 	fmt.Println("Wait 2 seconds... [sender]")
 	time.Sleep(time.Second * 2)
+
+	//只有发送端可以关闭接收通道
 	close(strChan)
 	syncChan2 <- struct{}{}
 }

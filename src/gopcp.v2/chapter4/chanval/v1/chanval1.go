@@ -20,6 +20,7 @@ func main() {
 		fmt.Println("Stopped. [receiver]")
 		syncChan <- struct{}{}
 	}()
+
 	go func() { // 用于演示发送操作。
 		countMap := make(map[string]int)
 		for i := 0; i < 5; i++ {
@@ -30,6 +31,8 @@ func main() {
 		close(mapChan)
 		syncChan <- struct{}{}
 	}()
+
+	//控制主函数的线程
 	<-syncChan
 	<-syncChan
 }

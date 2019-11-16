@@ -6,6 +6,7 @@ func main() {
 	dataChan := make(chan int, 5)
 	syncChan1 := make(chan struct{}, 1)
 	syncChan2 := make(chan struct{}, 2)
+
 	go func() { // 用于演示接收操作。
 		<-syncChan1
 		for {
@@ -23,11 +24,15 @@ func main() {
 			dataChan <- i
 			fmt.Printf("Sent: %d [sender]\n", i)
 		}
+		//发送完以后关闭dataChan  不影响接收
 		close(dataChan)
 		syncChan1 <- struct{}{}
 		fmt.Println("Done. [sender]")
 		syncChan2 <- struct{}{}
 	}()
+
+
+	//两个协程都通知通道2表示结束
 	<-syncChan2
 	<-syncChan2
 }
