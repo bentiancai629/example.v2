@@ -1,16 +1,21 @@
 package cow
 
 import (
-	"math/rand"
 	"sync"
 	"testing"
 )
 
 func TestConcurrentArray(t *testing.T) {
+	arrayLen := uint32(1000)
 	t.Run("all", func(t *testing.T) {
-		t.Run("New", testNew)
-		array := NewConcurrentArray(uint32(rand.Int31n(100)))
-		maxI := uint32(1000)
+		array := NewConcurrentArray(arrayLen)
+		if array == nil {
+			t.Fatalf("Unnormal array!")
+		}
+		if array.Len() != arrayLen {
+			t.Fatalf("Incorrect array length!")
+		}
+		maxI := uint32(2000)
 		t.Run("Set", func(t *testing.T) {
 			testSet(array, maxI, t)
 		})
@@ -18,17 +23,6 @@ func TestConcurrentArray(t *testing.T) {
 			testGet(array, maxI, t)
 		})
 	})
-}
-
-func testNew(t *testing.T) {
-	expectedLen := uint32(rand.Int31n(1000))
-	intArray := NewConcurrentArray(expectedLen)
-	if intArray == nil {
-		t.Fatalf("Unnormal int array!")
-	}
-	if intArray.Len() != expectedLen {
-		t.Fatalf("Incorrect int array length!")
-	}
 }
 
 func testSet(array ConcurrentArray, maxI uint32, t *testing.T) {
